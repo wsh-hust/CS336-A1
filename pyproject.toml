@@ -33,6 +33,15 @@ module-root = ""
 package = true
 python-preference = "managed"
 
+# 让 torch 固定从 PyTorch 官方 cu126 源安装（GPU 版）
+[tool.uv.sources]
+torch = { index = "pytorch-cu126" }
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
 [tool.pytest.ini_options]
 log_cli = true
 log_cli_level = "WARNING"

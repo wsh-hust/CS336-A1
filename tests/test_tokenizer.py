@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import json
 import os
-import resource
 import sys
+
+try:
+    import resource  # Unix only; unavailable on Windows
+except ImportError:
+    resource = None
 
 import psutil
 import pytest
@@ -19,6 +23,9 @@ MERGES_PATH = FIXTURES_PATH / "gpt2_merges.txt"
 def memory_limit(max_mem):
     def decorator(f):
         def wrapper(*args, **kwargs):
+            if resource is None:
+                # Windows: no setrlimit, just run the test without memory capping
+                return f(*args, **kwargs)
             process = psutil.Process(os.getpid())
             prev_limits = resource.getrlimit(resource.RLIMIT_AS)
             resource.setrlimit(resource.RLIMIT_AS, (process.memory_info().rss + max_mem, -1))
